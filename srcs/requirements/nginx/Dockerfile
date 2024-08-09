@@ -4,7 +4,7 @@ RUN apk update
 
 RUN apk upgrade
 
-RUN apk add nginx
+RUN apk add --no-cache nginx
 
 RUN mkdir -p /etc/nginx/ssl
 
@@ -18,8 +18,10 @@ RUN mkdir -p /var/run/nginx
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-#RUN chmod 755 /var/www/html && chown -R www-data:www-data /var/www/html
+RUN mkdir -p /var/www/html
 
-#CMD ["nginx", "-g", "daemon off;"]
+RUN chmod 755 /var/www/html
 
+#RUN chown -R www-data:www-data /var/www/html
 
+CMD ["nginx", "-g", "daemon off;"]

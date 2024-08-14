@@ -2,48 +2,39 @@
 # Start MariaDB
 
 # Inicia o serviço MariaDB no container
-echo "STARTING MARIA_DB"
+echo "STARTING MARIA_DB named -> ${DB_NAME}"
 
-#rc-service mariadb start
+# O comando service é usado para iniciar serviços em sistemas linux.
+service mariadb start
 #sleep 5
 
-# Configure MariaDB
+until mariadb -e "SELECT 1" > /dev/null 2>&1; do
+	echo "Waiting for MariaDB to start..."
+	sleep 2
+done
 
-if [ ! -d "/var/lib/mysql/mysql"]; then
-	mysql_install_db --user=mysql --datadir=/var/lib/mysql
-fi
+echo "Mariadb just started"
 
-mysqld_safe --datadir='/var/lib/mysql' & sleep 5
-
-echo "CONFIGURING MARIA_DB"
-
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
-mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
-mysql -e "FLUSH PRIVILEGES;"
-
-wait
-
-
-
-
-
-
-
-
-
+# Create database if not exists
+# A flag -e indica um comando sql que será executado diretamente.
+mariadb -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};" || {
+	echo "Error creating database ${DB_NAME}" >&2
+	exit 1
+}
 
 # Create user if not exists
+# O '@'%'' Permite que o usuário se conecte de qualquer endereço de ip
 
-#mariadb -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
+mariadb -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
 
 # Grant privileges to user
 
-#mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
+mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
 
 # Flush privileges to apply changes
-
-#mariadb -e "FLUSH PRIVILEGES;"
+# Isto força mariadb a recarregar as tabelas de permições, fazendo com que
+# as mudanças em cima sejam imediatamente aplicadas.
+mariadb -e "FLUSH PRIVILEGES;"
 
 # Restart MariaDB
 
@@ -56,4 +47,8 @@ mysqladmin -u root -p${DB_PASSWORD_ROOT} shutdown
 # Restart MariaDB, with the new configs, in the backgroundso it keeps running
 echo "RESTARTING MARIA_DB"
 
+# Reinicia mariadb em modo seguro
+# Configura para abrir a porta 3306
+# Configura para aceitar conexões de qualquer IP
+# A pasta dos dados será a /var/lib/mysql
 mysqld_safe --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql'

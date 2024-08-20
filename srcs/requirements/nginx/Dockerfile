@@ -1,27 +1,36 @@
-FROM alpine:3.19
+FROM debian:11
 
-RUN apk update
+RUN apt-get update
 
-RUN apk upgrade
+RUN apt-get upgrade
 
-RUN apk add --no-cache nginx
+RUN apt-get clean
 
+# Install nginx
+RUN apt-get install -y --no-install-recommends nginx
+
+# Install openssl
+RUN apt-get install -y --no-install-recommends openssl
+
+RUN apt-get clean
+
+# Create directory to ssl
+# -p flag ensures that no error is desplay if the directory already exists.
+# That ensures that the creation does not stop.
 RUN mkdir -p /etc/nginx/ssl
 
-RUN apk add openssl
-
+# Create ssl certificate
 RUN openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt \
 	-keyout /etc/nginx/ssl/inception.key \
 	-subj "/C=PT/ST=Porto/L=Porto/O=42/OU=42/CN=brolivei.42.fr/UID=brolivei"
 
-RUN mkdir -p /var/run/nginx
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-COPY ./conf/nginx_00.conf /etc/nginx/nginx.conf
-
+# Creating directory to webfiles
 RUN mkdir -p /var/www/html
 
 RUN chmod 755 /var/www/html
 
-#RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 CMD ["nginx", "-g", "daemon off;"]

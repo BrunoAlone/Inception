@@ -7,10 +7,10 @@ RUN apt-get upgrade
 RUN apt-get clean
 
 # Install nginx
-RUN apt-get install -y --no-install-recommends nginx
+RUN apt-get install -y --no-install-recommends nginx openssl
 
 # Install openssl
-RUN apt-get install -y --no-install-recommends openssl
+#RUN apt-get install -y --no-install-recommends openssl
 
 RUN apt-get clean
 
@@ -27,10 +27,10 @@ RUN openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt \
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
 # Creating directory to webfiles
-RUN mkdir -p /var/www/html
+RUN mkdir -p /var/www/wordpress
 
-RUN chmod 755 /var/www/html
+RUN chmod 755 /var/www/wordpress
 
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/wordpress
 
 CMD ["nginx", "-g", "daemon off;"]

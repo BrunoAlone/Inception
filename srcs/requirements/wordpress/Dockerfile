@@ -1,14 +1,16 @@
 FROM debian:11
 
-RUN apt-get update
+EXPOSE 9000
 
-RUN apt-get upgrade
+RUN apt-get update && apt-get upgrade
 
 RUN apt-get clean
 
-RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client netcat
+RUN apt-get install -y --no-install-recommends curl php php7.4-fpm php7.4-mysql mariadb-client netcat ca-certificates
 
-COPY ./conf/wp_conf.sh /
+RUN rm -rf /var/lib/apt/lists/*
+
+COPY ./conf/wp_conf.sh /wp_conf.sh
 
 RUN chmod +x wp_conf.sh
 

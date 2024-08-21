@@ -6,7 +6,6 @@ echo "STARTING MARIA_DB named -> ${DB_NAME}"
 
 # O comando service é usado para iniciar serviços em sistemas linux.
 service mariadb start
-#sleep 5
 
 until mariadb -e "SELECT 1" > /dev/null 2>&1; do
 	echo "Waiting for MariaDB to start..."
@@ -29,13 +28,15 @@ mariadb -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSW
 
 # Grant privileges to user
 
-mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';"
+mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';"
 
+mariadb -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${DB_PASSWORD_ROOT}');"
 # Flush privileges to apply changes
 # Isto força mariadb a recarregar as tabelas de permições, fazendo com que
 # as mudanças em cima sejam imediatamente aplicadas.
 mariadb -e "FLUSH PRIVILEGES;"
 
+sleep 5
 # Restart MariaDB
 
 # Shutdown to restart with the config above

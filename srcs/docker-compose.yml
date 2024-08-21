@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
 #mariadb
   mariadb:
@@ -19,7 +17,7 @@ services:
     container_name: nginx
     build: ./requirements/nginx
     ports:
-      - "443:443"
+      - "443:443" # To HTTPS
     depends_on:
       - wordpress
     volumes:
@@ -48,14 +46,14 @@ volumes:
     name: mariadb
     driver: local
     driver_opts:
-      device: /home/data/mariadb
+      device: /home/bruno/mariadb
       o: bind
       type: none
   wordpress:
     name: wordpress
     driver: local
     driver_opts:
-      device: /home/data/wordpress
+      device: /home/bruno/wordpress
       o: bind
       type: none
 

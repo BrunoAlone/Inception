@@ -13,4 +13,5 @@ COPY ./conf/mdb-conf.sh /mdb-conf.sh
 RUN chmod +x /mdb-conf.sh
 
 ENTRYPOINT ["/mdb-conf.sh"]
+#CMD ["/mdb-conf.sh"]
 # Dockerfile para criar imagem que irá correr a base de dados Mariadb.

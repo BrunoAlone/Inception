@@ -3,7 +3,7 @@
 
 # Instalação do wp-cli -> Isto é a linha de comando do wordpress, para
 # manipularmos o wordpress sem ter que usar o web browser
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+#curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
 chmod +x wp-cli.phar
 

@@ -5,6 +5,8 @@ DOMAIN = brolivei.42.fr
 all: up
 
 up: build
+#		Manipulating the file /etc/hosts, so the brolivei.42.fr is resolved
+#	like the local IP address.
 		@sudo hostsed add 127.0.0.1 $(DOMAIN)
 		@mkdir -p $(WP_DATA)
 		@mkdir -p $(DB_DATA)
@@ -22,8 +24,11 @@ start:
 build:
 		docker compose -f ./srcs/docker-compose.yml build
 
+clean:	stop
+		docker rm $$(docker ps -qa) || true
+		docker rmi -f $$(docker images -qa) || true
 
-clean:
+fclean:	stop
 		docker stop $$(docker ps -qa) || true
 		docker rm $$(docker ps -qa) || true
 		docker rmi -f $$(docker images -qa) || true

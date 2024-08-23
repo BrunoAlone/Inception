@@ -5,12 +5,13 @@ services:
     container_name: mariadb
     build: ./requirements/mariadb
     volumes:
-      - mariadb:/var/lib/mysql
+      - mariadb_volume:/var/lib/mysql
     env_file:
       - .env
     networks:
       - inception
-    restart: always
+    restart: unless-stopped # Restart the container if it stops. Unless it
+    # has been stopped by the user.
 #nginx
   nginx:
     image: nginx:brolivei
@@ -21,10 +22,10 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress:/var/www/wordpress
+      - wordpress_volume:/var/www/wordpress
     networks:
       - inception
-    restart: always
+    restart: unless-stopped
 #wordpress
   wordpress:
     image: wordpress:brolivei
@@ -33,31 +34,42 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - wordpress:/var/www/wordpress
+      - wordpress_volume:/var/www/wordpress #Volume in the wordpress container
     env_file:
       - .env
     networks:
       - inception
-    restart: always
+    restart: unless-stopped
 
 # Volumes!!
 volumes:
-  mariadb:
-    name: mariadb
+  mariadb_volume:
+    name: mariadb_volume
     driver: local
     driver_opts:
       device: /home/bruno/mariadb
       o: bind
       type: none
-  wordpress:
-    name: wordpress
-    driver: local
+  wordpress_volume:
+    name: wordpress_volume
+    driver: local # Stores the data in the host machine
     driver_opts:
-      device: /home/bruno/wordpress
-      o: bind
-      type: none
+      device: /home/bruno/wordpress # Specifie the exect directory onthe host
+      # that will be used for this volume
+      o: bind # maps the specified directory above on the host, to the container
+      type: none # Indicate that is a standard directory
+
+      # The result of this is that any data written in /var/www/wordpress inside
+      #the container is actually stored in /home/bruno/wordpress
+
+      # This volume is shared between Wordpress and NGINX so both services
+      #can access the same file.
 
 # NETWORK
 networks:
   inception:
     name: inception
+
+    # A docker-network created is the default one, the bridge network,
+    #and is named "inception", like the project. This network allows
+    #all containers that are part of it, to communicate with each other.

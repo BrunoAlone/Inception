@@ -7,6 +7,9 @@ RUN apt-get upgrade
 RUN apt-get clean
 
 # Install nginx
+# We dont need to specifie the version of NGINX, beacouse we are specifying
+#the SO version, and it will have always the same version of the programs to
+#install.
 RUN apt-get install -y --no-install-recommends nginx openssl
 
 # Install openssl

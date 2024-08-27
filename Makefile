@@ -12,6 +12,10 @@ up: build
 		@mkdir -p $(DB_DATA)
 		docker compose -f ./srcs/docker-compose.yml up -d
 
+test_TLSv:
+		@echo "Testing trying to connect with TLSv1.1"
+		openssl s_client -connect brolivei.42.fr:443 -tls1_1
+
 down:
 		docker compose -f ./srcs/docker-compose.yml down
 
